@@ -6,13 +6,19 @@ Group number: 25
 Project Title:
 
 Members:
+
 Hanqing Zhao, 2024213582, 241118795, 2679893760@qq.com
+
 Zhaoyu Li,
+
 Xi Chen,
 
 Assigned TA: Wenjing Yu
 
 The allocation of tasks among members:
+
 Homepage:
+
 Game:
+
 Quiz:
