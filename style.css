@@ -1,0 +1,369 @@
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            color: #0f172a;
+            line-height: 1.5;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        /* 暗色主题 (Wellbeing & 包容性) */
+        body.dark {
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+
+        /* 主容器 */
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* ========= 导航栏 ========= */
+        .navbar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+            gap: 1rem;
+        }
+        body.dark .navbar {
+            border-bottom-color: rgba(255,255,255,0.1);
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .logo i {
+            background: none;
+            background-clip: unset;
+            color: #2563eb;
+        }
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .nav-btn {
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 0.6rem 1.2rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #334155;
+            font-family: inherit;
+        }
+        body.dark .nav-btn {
+            color: #cbd5e1;
+        }
+        .nav-btn.active {
+            background: #2563eb;
+            color: white;
+            box-shadow: 0 4px 10px rgba(37,99,235,0.3);
+        }
+        .nav-btn:not(.active):hover {
+            background: #e2e8f0;
+        }
+        body.dark .nav-btn:not(.active):hover {
+            background: #1e293b;
+        }
+        .theme-toggle {
+            background: #eef2ff;
+            border: none;
+            font-size: 1.3rem;
+            padding: 0.5rem;
+            border-radius: 2rem;
+            width: 40px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        body.dark .theme-toggle {
+            background: #1e293b;
+            color: #facc15;
+        }
+
+        /* ========= 页面区块 ========= */
+        .section {
+            display: none;
+            animation: fade 0.3s ease;
+            padding: 2rem 0 3rem;
+        }
+        .section.active-section {
+            display: block;
+        }
+        @keyframes fade {
+            from { opacity: 0; transform: translateY(8px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        /* 通用卡片 */
+        .card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+            border: 1px solid #eef2ff;
+        }
+        body.dark .card {
+            background: #1e293b;
+            border-color: #334155;
+            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.3);
+        }
+
+        /* ---------- 主页区域：视觉动画区 + USP + 广告 ---------- */
+        .hero-slider {
+            background: linear-gradient(145deg, #eef2ff, #ffffff);
+            border-radius: 2rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        body.dark .hero-slider {
+            background: #1e293b;
+        }
+        .theorem-demo {
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .diagram-canvas {
+            background: #fef9e3;
+            border-radius: 28px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            max-width: 100%;
+            height: auto;
+            width: 300px;
+            height: 300px;
+        }
+        body.dark .diagram-canvas {
+            background: #2d3a4e;
+        }
+        .theorem-caption {
+            margin-top: 1rem;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .slider-controls {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        .slider-btn {
+            background: #2563eb;
+            border: none;
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .slider-btn:hover {
+            background: #1d4ed8;
+        }
+
+        /* 亮点与广告 */
+        .usp-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .usp-item {
+            flex: 1;
+            min-width: 180px;
+            background: #f1f5f9;
+            border-radius: 1.2rem;
+            padding: 1rem;
+            text-align: center;
+        }
+        body.dark .usp-item {
+            background: #0f172a;
+        }
+        .banner-ad {
+            background: linear-gradient(135deg, #facc15, #f59e0b);
+            color: #0f172a;
+            padding: 0.8rem;
+            text-align: center;
+            border-radius: 1rem;
+            margin-top: 1rem;
+            font-weight: 600;
+        }
+
+        /* ---------- 游戏占位区 (仅视觉框架) ---------- */
+        .game-placeholder {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+        }
+        .game-visual-card {
+            flex: 2;
+            min-width: 260px;
+        }
+        .mock-canvas {
+            background: #fef9e3;
+            border-radius: 1.5rem;
+            width: 100%;
+            max-width: 400px;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #475569;
+            box-shadow: inset 0 0 0 2px #e2e8f0;
+        }
+        body.dark .mock-canvas {
+            background: #2d3a4e;
+            color: #94a3b8;
+        }
+        .coming-soon-badge {
+            background: #2563eb20;
+            backdrop-filter: blur(4px);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-weight: 600;
+        }
+
+        /* ---------- 测验占位区 (框架) ---------- */
+        .quiz-mock {
+            background: #f8fafc;
+            border-radius: 1.5rem;
+        }
+        .level-badge {
+            background: #2563eb;
+            padding: 0.3rem 0.9rem;
+            border-radius: 2rem;
+            color: white;
+            font-size: 0.8rem;
+        }
+        .mock-question {
+            background: #f1f5f9;
+            border-radius: 1rem;
+            padding: 1.2rem;
+            margin: 1rem 0;
+        }
+        body.dark .mock-question {
+            background: #0f172a;
+        }
+
+        /* 聊天小部件 (AI 问候 + 联系表单) */
+        .chat-widget {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 300px;
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 35px -10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            border: 1px solid #e2e8f0;
+            transition: 0.2s;
+        }
+        body.dark .chat-widget {
+            background: #1e293b;
+            border-color: #475569;
+        }
+        .chat-header {
+            background: #2563eb;
+            color: white;
+            padding: 0.8rem 1rem;
+            border-radius: 1.5rem 1.5rem 0 0;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            user-select: none;
+        }
+        .chat-body {
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        .chat-messages {
+            min-height: 100px;
+            max-height: 160px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+            background: #f9fafb;
+            border-radius: 1rem;
+            padding: 0.6rem;
+        }
+        body.dark .chat-messages {
+            background: #0f172a;
+        }
+        .contact-form input, .contact-form textarea {
+            width: 100%;
+            margin-top: 0.5rem;
+            padding: 0.6rem;
+            border-radius: 1rem;
+            border: 1px solid #cbd5e1;
+            background: white;
+            font-family: inherit;
+        }
+        body.dark .contact-form input,
+        body.dark .contact-form textarea {
+            background: #334155;
+            border-color: #475569;
+            color: #f1f5f9;
+        }
+        .send-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 2rem;
+            margin-top: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            font-size: 0.8rem;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 1rem;
+        }
+        body.dark footer {
+            border-top-color: #1e293b;
+        }
+
+        @media (max-width: 700px) {
+            .navbar {
+                flex-direction: column;
+            }
+            .chat-widget {
+                width: 260px;
+                right: 1rem;
+                bottom: 1rem;
+            }
+            .usp-grid {
+                flex-direction: column;
+            }
+        }
