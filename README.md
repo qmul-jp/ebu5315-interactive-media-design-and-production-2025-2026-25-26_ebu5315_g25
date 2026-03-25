@@ -3,22 +3,22 @@
 
 Group number: 25
 
-Project Title:
+Project Title: Omath / 圆趣数学
 
 Members:
 
 Hanqing Zhao, 2024213582, 241118795, 2679893760@qq.com
 
-Zhaoyu Li,
+Zhaoyu Li, 2024213585, 241118223, gaizhui1108@163.com
 
-Xi Chen,
+Xi Chen, 2024213596, 241117983, bilibili_cx060506@163.com
 
 Assigned TA: Wenjing Yu
 
 The allocation of tasks among members:
 
-Homepage:
+Homepage: Zhaoyu Li
 
-Game:
+Game: Hanqing Zhao
 
-Quiz:
+Quiz: Xi Chen
