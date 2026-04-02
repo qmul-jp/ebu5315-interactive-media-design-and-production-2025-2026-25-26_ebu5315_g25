@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>点圆大乱斗 | 精准投点·圆来如此 | 初三数学互动游戏</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a472a 0%, #0e2a1a 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Poppins', 'Roboto', 'Noto Sans', system-ui, sans-serif;
+            padding: 20px;
+        }
+
+        /* 游戏主面板 */
+        .game-wrapper {
+            max-width: 1000px;
+            width: 100%;
+            background: #fef7e0;
+            border-radius: 80px;
+            box-shadow: 0 30px 40px rgba(0, 0, 0, 0.4), inset 0 1px 3px rgba(255, 255, 255, 0.7);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        /* 头部信息 */
+        .game-header {
+            background: #ffb347;
+            padding: 20px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            border-bottom: 4px solid #e67e22;
+        }
+
+        .score-card {
+            background: #2c3e2f;
+            border-radius: 50px;
+            padding: 8px 25px;
+            color: #ffefb9;
+            font-weight: bold;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            box-shadow: inset 0 -2px 0 #1e2a1f, 0 5px 10px rgba(0,0,0,0.2);
+        }
+
+        .score-card span:first-child {
+            font-size: 1rem;
+            letter-spacing: 2px;
+        }
+
+        .score-card #scoreValue {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #ffd966;
+        }
+
+        .combo-card {
+            background: #5e3a1c;
+            border-radius: 60px;
+            padding: 8px 25px;
+            font-weight: bold;
+            color: #ffdca8;
+            font-size: 1.3rem;
+        }
+
+        .combo-card span {
+            color: #ffaa33;
+            font-size: 1.8rem;
+            margin-right: 5px;
+        }
+
+        .new-round-btn {
+            background: #284b63;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 1rem;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            font-family: inherit;
+        }
+
+        .new-round-btn:hover {
+            background: #1f3a4b;
+            transform: scale(0.96);
+        }
+
+        /* canvas 战斗区域 */
+        .canvas-area {
+            display: flex;
+            justify-content: center;
+            padding: 30px 30px 15px 30px;
+        }
+
+        canvas {
+            background: #fcf9ef;
+            border-radius: 48px;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            height: auto;
+            max-width: 520px;
+            aspect-ratio: 1 / 1;
+            cursor: crosshair;
+            border: 4px solid #e0bc7c;
+            transition: 0.1s;
+        }
+
+        canvas:active {
+            transform: scale(0.99);
+        }
+
+        /* 圆的数据面板 */
+        .info-panel {
+            background: #ebddb0;
+            margin: 5px 32px 20px 32px;
+            border-radius: 48px;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-weight: bold;
+            border: 1px solid #f3d58c;
+        }
+
+        .circle-stats {
+            background: #fff3df;
+            padding: 6px 20px;
+            border-radius: 40px;
+            color: #704214;
+            font-size: 1rem;
+        }
+
+        .circle-stats strong {
+            color: #c24400;
+            font-size: 1.2rem;
+        }
+
+        .last-hit {
+            background: #ddcc99;
+            padding: 6px 20px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            color: #2b4f2f;
+        }
+
+        /* 反馈与操作区 */
+        .feedback-bar {
+            background: #fff0da;
+            margin: 0px 32px 25px 32px;
+            border-radius: 48px;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .message-box {
+            background: #e8f0e3;
+            padding: 10px 18px;
+            border-radius: 60px;
+            flex: 2;
+            font-weight: 500;
+            color: #2d5a2c;
+            font-size: 1rem;
+        }
+
+        .reset-game-btn {
+            background: #bc6c25;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 40px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            font-family: inherit;
+            transition: 0.2s;
+        }
+
+        .reset-game-btn:hover {
+            background: #9c5518;
+            transform: scale(0.96);
+        }
+
+        .rule-tip {
+            text-align: center;
+            font-size: 0.75rem;
+            padding: 12px;
+            color: #9c7e4c;
+            background: #fff4e4;
+            border-top: 1px solid #eeddbb;
+        }
+
+        @media (max-width: 600px) {
+            .game-header { padding: 15px 20px; }
+            .score-card { font-size: 1.2rem; padding: 4px 18px; }
+            .score-card #scoreValue { font-size: 1.6rem; }
+            .info-panel { margin: 5px 20px 15px 20px; }
+            .feedback-bar { margin: 0px 20px 20px 20px; }
+            .circle-stats { font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="game-wrapper">
+    <div class="game-header">
+        <div class="score-card">
+            <span>🎯 圆分</span>
+            <span id="scoreValue">0</span>
+        </div>
+        <div class="combo-card">
+            <span>🔥 连击</span>
+            <span id="comboValue">0</span>
+        </div>
+        <button class="new-round-btn" id="randomCircleBtn">🌀 随机新圆</button>
+    </div>
+
+    <div class="canvas-area">
+        <canvas id="gameCanvas" width="520" height="520"></canvas>
+    </div>
+
+    <div class="info-panel">
+        <div class="circle-stats">
+            📍 圆心 O (<span id="centerX">0</span>, <span id="centerY">0</span>) &nbsp;|&nbsp;
+            📏 半径 r = <strong id="radiusVal">0.00</strong>
+        </div>
+        <div class="last-hit">
+            🎲 上次点击: <span id="lastPos">—</span> &nbsp;|&nbsp;
+            📐 距离 d = <span id="lastDistance">—</span>
+        </div>
+    </div>
+
+    <div class="feedback-bar">
+        <div class="message-box" id="gameMsg">
+            💡 点击画布任意处 → 将点“投”到圆内/圆外！<br>
+            🟢 圆内 +10分 &nbsp;|&nbsp; 🟡 圆上 +20分 &nbsp;|&nbsp; 🔴 圆外 -5分
+        </div>
+        <button class="reset-game-btn" id="fullResetBtn">🔄 重置分数/连击</button>
+    </div>
+    <div class="rule-tip">
+        ✨ 游戏规则：每次点击生成一个点，系统自动计算点到圆心距离 d，与半径 r 比较。<br>
+        📖 点与圆位置关系 → d＜r 圆内得分；d＝r 圆上高分；d＞r 圆外扣分。连续命中圆内/圆上可增加连击！
+    </div>
+</div>
+
+<script>
+    (function(){
+        // ---------- DOM 元素 ----------
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 画布实际尺寸 (固定 520x520)
+        canvas.width = 520;
+        canvas.height = 520;
+        
+        // 游戏数据
+        let center = { x: 260, y: 260 };   // 圆心坐标(像素)
+        let radius = 100;                  // 半径(像素)
+        
+        // 得分 & 连击
+        let totalScore = 0;
+        let combo = 0;                     // 连击次数（连续命中圆内或圆上累加，圆外或重置归零）
+        
+        // 上一次点击的位置(用于显示)
+        let lastClickPoint = null;
+        let lastDistance = null;
+        
+        // 标志是否显示临时特效 (点击时闪一下)
+        let effectPoint = null;
+        let effectTimer = null;
+        
+        // DOM 引用
+        const scoreSpan = document.getElementById('scoreValue');
+        const comboSpan = document.getElementById('comboValue');
+        const centerXSpan = document.getElementById('centerX');
+        const centerYSpan = document.getElementById('centerY');
+        const radiusSpan = document.getElementById('radiusVal');
+        const lastPosSpan = document.getElementById('lastPos');
+        const lastDistanceSpan = document.getElementById('lastDistance');
+        const gameMsgDiv = document.getElementById('gameMsg');
+        
+        const randomCircleBtn = document.getElementById('randomCircleBtn');
+        const fullResetBtn = document.getElementById('fullResetBtn');
+        
+        // ---------- 辅助函数: 更新UI统计 ----------
+        function updateStatsUI() {
+            scoreSpan.innerText = totalScore;
+            comboSpan.innerText = combo;
+            centerXSpan.innerText = center.x;
+            centerYSpan.innerText = center.y;
+            radiusSpan.innerText = radius.toFixed(1);
+            if (lastClickPoint) {
+                lastPosSpan.innerText = `(${lastClickPoint.x}, ${lastClickPoint.y})`;
+            } else {
+                lastPosSpan.innerText = '—';
+            }
+            if (lastDistance !== null) {
+                lastDistanceSpan.innerText = lastDistance.toFixed(2);
+            } else {
+                lastDistanceSpan.innerText = '—';
+            }
+        }
+        
+        // 绘制圆和网格、辅助元素 (每次重绘)
+        function drawScene(highlightPoint = null) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 浅色网格背景 (帮助定位坐标)
+            ctx.save();
+            ctx.strokeStyle = "#d9cba3";
+            ctx.lineWidth = 0.8;
+            for (let i = 0; i <= canvas.width; i += 40) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, canvas.height);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(canvas.width, i);
+                ctx.stroke();
+            }
+            
+            // 绘制坐标轴 (淡灰色)
+            ctx.beginPath();
+            ctx.moveTo(canvas.width/2, 0);
+            ctx.lineTo(canvas.width/2, canvas.height);
+            ctx.moveTo(0, canvas.height/2);
+            ctx.lineTo(canvas.width, canvas.height/2);
+            ctx.strokeStyle = "#bcab7a";
+            ctx.lineWidth = 1.2;
+            ctx.stroke();
+            
+            // 绘制圆 (主游戏元素)
+            ctx.beginPath();
+            ctx.arc(center.x, center.y, radius, 0, 2 * Math.PI);
+            // 填充半透明金色区域
+            ctx.fillStyle = "rgba(255, 215, 130, 0.25)";
+            ctx.fill();
+            ctx.strokeStyle = "#e67e22";
+            ctx.lineWidth = 3.5;
+            ctx.stroke();
+            
+            // 绘制圆心标记
+            ctx.beginPath();
+            ctx.arc(center.x, center.y, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = "#c0392b";
+            ctx.shadowBlur = 0;
+            ctx.fill();
+            ctx.fillStyle = "white";
+            ctx.font = "bold 14px 'Segoe UI'";
+            ctx.fillText("O", center.x - 8, center.y - 6);
+            
+            // 绘制半径指示虚线（从圆心到圆周上右侧点）
+            const angle = 0;
+            const edgeX = center.x + radius * Math.cos(angle);
+            const edgeY = center.y + radius * Math.sin(angle);
+            ctx.beginPath();
+            ctx.moveTo(center.x, center.y);
+            ctx.lineTo(edgeX, edgeY);
+            ctx.strokeStyle = "#e67e22";
+            ctx.setLineDash([6, 8]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = "#b45f2b";
+            ctx.font = "500 12px 'Segoe UI'";
+            ctx.fillText(`r = ${radius.toFixed(1)}`, center.x + radius/2 - 10, center.y - 8);
+            
+            // 绘制上次点击的点 (如果有)
+            if (lastClickPoint) {
+                ctx.beginPath();
+                ctx.arc(lastClickPoint.x, lastClickPoint.y, 6, 0, 2 * Math.PI);
+                ctx.fillStyle = "#2c6e9e";
+                ctx.shadowBlur = 4;
+                ctx.fill();
+                ctx.fillStyle = "white";
+                ctx.font = "bold 12px 'Segoe UI'";
+                ctx.fillText("•", lastClickPoint.x-2, lastClickPoint.y+3);
+                ctx.shadowBlur = 0;
+                // 画出到圆心的连线虚线
+                ctx.beginPath();
+                ctx.moveTo(center.x, center.y);
+                ctx.lineTo(lastClickPoint.x, lastClickPoint.y);
+                ctx.strokeStyle = "#7f8c8d";
+                ctx.setLineDash([4, 6]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+            
+            // 绘制高亮特效点 (短暂闪烁)
+            if (highlightPoint) {
+                ctx.beginPath();
+                ctx.arc(highlightPoint.x, highlightPoint.y, 10, 0, 2 * Math.PI);
+                ctx.fillStyle = "rgba(255, 200, 50, 0.7)";
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(highlightPoint.x, highlightPoint.y, 4, 0, 2 * Math.PI);
+                ctx.fillStyle = "#f39c12";
+                ctx.fill();
+            }
+            
+            // 额外标注圆内圆外文字提示区域
+            ctx.font = "italic 12px 'Segoe UI'";
+            ctx.fillStyle = "#aa8c54";
+            ctx.fillText("⚡ 圆内加分区", center.x - 35, center.y - radius + 15);
+            ctx.fillStyle = "#b34e3a";
+            ctx.fillText("⚠️ 圆外扣分区", center.x + radius/2 + 5, center.y + radius - 10);
+        }
+        
+        // 核心玩法：处理点击坐标，计算点与圆的关系并更新分数/连击
+        function handleCanvasClick(e) {
+            // 获取鼠标/手指在canvas上的坐标
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;   // canvas实际像素与CSS比例
+            const scaleY = canvas.height / rect.height;
+            let clientX, clientY;
+            if (e.touches) {
+                // 移动端触摸支持
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+                e.preventDefault();
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            let canvasX = (clientX - rect.left) * scaleX;
+            let canvasY = (clientY - rect.top) * scaleY;
+            // 边界裁剪
+            canvasX = Math.min(Math.max(0, canvasX), canvas.width);
+            canvasY = Math.min(Math.max(0, canvasY), canvas.height);
+            
+            const clickPoint = { x: canvasX, y: canvasY };
+            // 计算距离 d (欧几里得距离)
+            const dx = clickPoint.x - center.x;
+            const dy = clickPoint.y - center.y;
+            const distance = Math.hypot(dx, dy);
+            const epsilon = 1.8;   // 容差 (因为点击精度，稍微允许误差当“圆上”)
+            
+            let isOnCircle = false;
+            let isInside = false;
+            let pointStatus = "";
+            let scoreDelta = 0;
+            
+            // 判断关系: 圆上: |d - r| <= epsilon
+            if (Math.abs(distance - radius) <= epsilon) {
+                isOnCircle = true;
+                pointStatus = "圆上 🟡";
+                scoreDelta = 20;
+            } else if (distance < radius) {
+                isInside = true;
+                pointStatus = "圆内 🟢";
+                scoreDelta = 10;
+            } else {
+                pointStatus = "圆外 🔴";
+                scoreDelta = -5;
+            }
+            
+            // 更新连击逻辑: 如果获得正分(圆内或圆上)则连击+1, 否则重置连击
+            let comboMsg = "";
+            if (scoreDelta > 0) {
+                combo++;
+                comboMsg = ` 连击 x${combo} !`;
+            } else {
+                combo = 0;
+                comboMsg = " 连击中断...";
+            }
+            
+            // 更新总分
+            totalScore += scoreDelta;
+            if (totalScore < 0) totalScore = 0;  // 分数不低于0
+            
+            // 保存上次点击信息
+            lastClickPoint = clickPoint;
+            lastDistance = distance;
+            
+            // 刷新UI
+            updateStatsUI();
+            
+            // 显示详细反馈信息
+            let msgColor = "";
+            if (scoreDelta > 0) {
+                msgColor = "✅ ";
+                if (isOnCircle) msgColor = "🎯 完美! ";
+            } else {
+                msgColor = "❌ ";
+            }
+            gameMsgDiv.innerHTML = `${msgColor}点击点 (${Math.round(canvasX)}, ${Math.round(canvasY)}) → 位置: ${pointStatus} | d = ${distance.toFixed(2)} , 半径 r = ${radius.toFixed(2)}<br>${scoreDelta>0 ? `+${scoreDelta}分` : `${scoreDelta}分`} ${comboMsg}`;
+            if (scoreDelta > 0) {
+                gameMsgDiv.style.background = "#d9f0d2";
+            } else {
+                gameMsgDiv.style.background = "#ffe0cc";
+            }
+            
+            // 添加短暂特效
+            if (effectTimer) clearTimeout(effectTimer);
+            effectPoint = clickPoint;
+            drawScene(effectPoint);
+            effectTimer = setTimeout(() => {
+                effectPoint = null;
+                drawScene(null);
+            }, 280);
+            
+            // 额外绘制更新普通场景
+            drawScene(null);
+        }
+        
+        // 随机生成新圆 (圆心不超出画布边缘，半径合理 40~180)
+        function generateRandomCircle() {
+            const minR = 45;
+            const maxR = 190;
+            const newRadius = Math.floor(Math.random() * (maxR - minR + 1) + minR);
+            // 圆心保证整个圆在画布内 (且不超出边界太离谱)
+            const minX = newRadius + 10;
+            const maxX = canvas.width - newRadius - 10;
+            const minY = newRadius + 10;
+            const maxY = canvas.height - newRadius - 10;
+            const newCenterX = Math.floor(Math.random() * (maxX - minX + 1) + minX);
+            const newCenterY = Math.floor(Math.random() * (maxY - minY + 1) + minY);
+            
+            center = { x: newCenterX, y: newCenterY };
+            radius = newRadius;
+            
+            // 重置上次点击的信息 (新圆后上次点击失效)
+            lastClickPoint = null;
+            lastDistance = null;
+            // 注意: 换圆时不重置分数和连击，让玩家继续挑战，但可以保留策略。但一般刷新圆不清分，让游戏延续。
+            // 不过为了公平，不清分数，但显示友好提醒
+            gameMsgDiv.innerHTML = `🌀 新圆生成！ 圆心 (${center.x}, ${center.y})  半径 ${radius.toFixed(1)}。继续点击挑战吧！`;
+            gameMsgDiv.style.background = "#e9f3e6";
+            updateStatsUI();
+            drawScene(null);
+        }
+        
+        // 完全重置游戏：分数归零、连击归零，但保留当前圆不变（可保留圆），清除点击历史
+        function fullReset() {
+            totalScore = 0;
+            combo = 0;
+            lastClickPoint = null;
+            lastDistance = null;
+            updateStatsUI();
+            gameMsgDiv.innerHTML = "✨ 游戏已重置！分数归零，连击清零，继续挑战点与圆的位置关系 ✨";
+            gameMsgDiv.style.background = "#fcf3da";
+            drawScene(null);
+        }
+        
+        // 随机圆 + 重置历史但不重置分数(让玩家有新挑战)
+        function randomCircleHandler() {
+            generateRandomCircle();
+            // 避免残留上次点击特效干扰
+            if (effectTimer) clearTimeout(effectTimer);
+            effectPoint = null;
+        }
+        
+        // 监听canvas点击事件 (鼠标+触摸)
+        function bindEvents() {
+            canvas.addEventListener('click', handleCanvasClick);
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                const fakeEvent = { clientX: touch.clientX, clientY: touch.clientY, touches: e.touches };
+                handleCanvasClick(fakeEvent);
+            });
+        }
+        
+        // 初始化第一组圆（确保圆在合理范围内）
+        function initGame() {
+            // 预设一个标准的圆心和半径
+            center = { x: 260, y: 260 };
+            radius = 110;
+            totalScore = 0;
+            combo = 0;
+            lastClickPoint = null;
+            lastDistance = null;
+            updateStatsUI();
+            drawScene();
+            gameMsgDiv.innerHTML = "🎉 欢迎来到点圆大乱斗！点击画布，将点“投”入圆内得分！圆上更刺激！";
+            gameMsgDiv.style.background = "#eef3e3";
+        }
+        
+        // 窗口尺寸自适应时重绘 (防止缩放变形, canvas像素不变重绘即可)
+        window.addEventListener('resize', () => { drawScene(); });
+        
+        // 绑定按钮
+        randomCircleBtn.addEventListener('click', randomCircleHandler);
+        fullResetBtn.addEventListener('click', fullReset);
+        
+        // 启动游戏
+        initGame();
+        bindEvents();
+        
+        // 额外: 每次更新画布数据后调用 drawScene, 在更新圆心半径后、得分变化后重绘。
+        // 为了保持UI同步，每次修改center/radius或者点击后都调用drawScene，确保视觉正确
+        // 重写updateStatsUI后调用drawScene (因为里面可能变化)
+        const origUpdateUI = updateStatsUI;
+        window.updateStatsUI = function() {
+            origUpdateUI();
+            drawScene(null);
+        };
+        updateStatsUI = function() {
+            origUpdateUI();
+            drawScene(null);
+        }.bind(this);
+        
+        // 确保每次修改数据后刷新
+        // 替换函数引用
+        updateStatsUI();
+        // 保证随机圆后重绘
+        const origGenerate = generateRandomCircle;
+        generateRandomCircle = function() {
+            origGenerate();
+            drawScene(null);
+        }.bind(this);
+        generateRandomCircle();
+        
+        // 由于上面调用了initGame和generateRandomCircle冲突，手动整理
+        // 最后确保初始化正确
+        setTimeout(() => {
+            drawScene(null);
+        }, 10);
+    })();
+</script>
+</body>
+</html>
