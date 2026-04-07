@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>弧角挑战赛 | 圆周角定理 · 劣弧大挑战 | 初三数学互动游戏</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none; /* 避免拖动干扰，不影响学习 */
+        }
+
+        body {
+            background: linear-gradient(145deg, #1e4b3c 0%, #0a2e25 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Poppins', 'Roboto', 'Noto Sans', system-ui, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* 游戏主卡片 */
+        .game-container {
+            max-width: 1000px;
+            width: 100%;
+            background: #fef7e8;
+            border-radius: 72px;
+            box-shadow: 0 30px 40px rgba(0, 0, 0, 0.4), inset 0 1px 3px rgba(255,255,240,0.8);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        /* 头部信息 */
+        .game-header {
+            background: #ffaa44;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            border-bottom: 4px solid #e67e22;
+        }
+
+        .target-box {
+            background: #2c3e2f;
+            border-radius: 60px;
+            padding: 8px 25px;
+            color: #ffefb9;
+            font-weight: bold;
+            font-size: 1.3rem;
+            box-shadow: inset 0 -2px 0 #1e2a1f, 0 5px 12px rgba(0,0,0,0.2);
+        }
+
+        .target-box span {
+            font-size: 2rem;
+            color: #ffbc6e;
+            margin-right: 6px;
+        }
+
+        .score-board {
+            background: #5e3a1c;
+            border-radius: 60px;
+            padding: 8px 25px;
+            font-weight: bold;
+            color: #ffdca8;
+            font-size: 1.2rem;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .score-board div strong {
+            color: #ffcc77;
+            font-size: 1.5rem;
+            margin-right: 5px;
+        }
+
+        /* canvas 区域 */
+        .canvas-area {
+            display: flex;
+            justify-content: center;
+            padding: 30px 30px 15px 30px;
+        }
+
+        canvas {
+            background: #fcf9ef;
+            border-radius: 48px;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            height: auto;
+            max-width: 600px;
+            aspect-ratio: 1 / 1;
+            cursor: crosshair;
+            border: 4px solid #e0bc7c;
+            transition: 0.1s;
+        }
+
+        canvas:active {
+            transform: scale(0.99);
+        }
+
+        /* 信息面板 */
+        .info-panel {
+            background: #ebddb0;
+            margin: 5px 30px 20px 30px;
+            border-radius: 48px;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-weight: bold;
+        }
+
+        .angle-result {
+            background: #fff3df;
+            padding: 6px 20px;
+            border-radius: 40px;
+            color: #704214;
+        }
+
+        .angle-result strong {
+            color: #c24400;
+            font-size: 1.3rem;
+        }
+
+        .current-score {
+            background: #ddcc99;
+            padding: 6px 20px;
+            border-radius: 40px;
+            color: #2b4f2f;
+        }
+
+        /* 按钮区域 */
+        .action-bar {
+            background: #fff0da;
+            margin: 0px 30px 25px 30px;
+            border-radius: 48px;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        button {
+            background: #bc6c25;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1rem;
+            color: white;
+            cursor: pointer;
+            font-family: inherit;
+            transition: 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        button:hover {
+            background: #9c5518;
+            transform: scale(0.96);
+        }
+
+        .clear-btn {
+            background: #3c6e71;
+        }
+        .clear-btn:hover {
+            background: #284b63;
+        }
+
+        .next-btn {
+            background: #e67e22;
+        }
+        .next-btn:hover {
+            background: #bf6516;
+        }
+
+        .feedback {
+            background: #e8f0e3;
+            padding: 12px 20px;
+            border-radius: 60px;
+            flex: 2;
+            font-size: 0.9rem;
+            color: #2d5a2c;
+            font-weight: 500;
+        }
+
+        .rule-tip {
+            text-align: center;
+            font-size: 0.75rem;
+            padding: 12px;
+            color: #9c7e4c;
+            background: #fff4e4;
+            border-top: 1px solid #eeddbb;
+        }
+
+        @media (max-width: 650px) {
+            .game-header { padding: 15px 20px; }
+            .target-box { font-size: 1rem; padding: 4px 18px; }
+            .score-board { font-size: 0.9rem; padding: 4px 18px; gap: 12px; }
+            .info-panel { margin: 5px 20px 15px 20px; }
+            .action-bar { margin: 0px 20px 20px 20px; }
+            button { padding: 6px 18px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="game-header">
+        <div class="target-box">
+            🎯 目标圆周角 &nbsp; <span id="targetAngle">0.0</span>°
+        </div>
+        <div class="score-board">
+            <div>🏆 总分 &nbsp;<strong id="totalScore">0</strong></div>
+            <div>✨ 本轮得分 &nbsp;<strong id="roundScore">0</strong></div>
+        </div>
+    </div>
+
+    <div class="canvas-area">
+        <canvas id="circleCanvas" width="600" height="600"></canvas>
+    </div>
+
+    <div class="info-panel">
+        <div class="angle-result">
+            📐 弦所对 <strong>劣弧上的圆周角</strong> = <span id="computedAngle">—</span> °
+        </div>
+        <div class="current-score">
+            🎲 本次挑战得分 : <span id="challengeScoreSpan">0</span> 分
+        </div>
+    </div>
+
+    <div class="action-bar">
+        <div class="feedback" id="feedbackMsg">
+            💡 点击圆上两点，确定一条弦 → 自动计算劣弧所对圆周角，与目标角度对比得分！
+        </div>
+        <button class="clear-btn" id="clearPointsBtn">🗑️ 清除点</button>
+        <button class="next-btn" id="nextRoundBtn">✨ 下一题 & 累计总分</button>
+    </div>
+    <div class="rule-tip">
+        📖 圆周角定理：同弧所对圆周角 = 圆心角的一半。<br>
+        ✨ 弦分圆为两弧，我们取 <strong>劣弧</strong> 上的圆周角 = 劣弧圆心角 ÷ 2 (范围 0°~90°)。<br>
+        🎯 目标角度 0°~90°，你点的弦得到的劣弧圆周角越接近目标，得分越高！(满分100，差值每1°扣2分)
+    </div>
+</div>
+
+<script>
+    (function(){
+        // ---------- 固定画布 ----------
+        const canvas = document.getElementById('circleCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 600;
+        canvas.height = 600;
+
+        // 圆几何参数 (圆心固定，半径固定便于计算)
+        const center = { x: 300, y: 300 };
+        let radius = 220;        // 半径 220px (距离边框留有余地)
+        
+        // 游戏核心状态
+        let targetAngle = 45.0;           // 当前目标角度 (0~90)
+        let totalPoints = 0;               // 累计总分 (跨轮累加)
+        let currentRoundScore = 0;         // 本轮最新得分 (最新一次弦计算得分)
+        
+        // 圆上已选点 (A, B)
+        let pointA = null;                 // {x, y, angle}
+        let pointB = null;
+        
+        // 最近计算的弦对应的劣弧圆周角 (度数)
+        let lastComputedArcAngle = null;
+        
+        // DOM 元素
+        const targetAngleSpan = document.getElementById('targetAngle');
+        const totalScoreSpan = document.getElementById('totalScore');
+        const roundScoreSpan = document.getElementById('roundScore');
+        const computedAngleSpan = document.getElementById('computedAngle');
+        const challengeScoreSpan = document.getElementById('challengeScoreSpan');
+        const feedbackMsgDiv = document.getElementById('feedbackMsg');
+        
+        const clearPointsBtn = document.getElementById('clearPointsBtn');
+        const nextRoundBtn = document.getElementById('nextRoundBtn');
+        
+        // ---------- 辅助函数 ----------
+        function updateUI() {
+            targetAngleSpan.innerText = targetAngle.toFixed(1);
+            totalScoreSpan.innerText = totalPoints;
+            roundScoreSpan.innerText = currentRoundScore;
+            if (lastComputedArcAngle !== null) {
+                computedAngleSpan.innerText = lastComputedArcAngle.toFixed(1);
+            } else {
+                computedAngleSpan.innerText = '—';
+            }
+            challengeScoreSpan.innerText = currentRoundScore;
+        }
+        
+        // 计算两点相对于圆心的极角 (弧度)
+        function getAngleFromCenter(px, py) {
+            return Math.atan2(py - center.y, px - center.x);
+        }
+        
+        // 给定两点，计算弦所对的劣弧上的圆周角（度数）【核心修改】
+        // 返回角度值 (0~90)
+        function computeArcAngle(pointA, pointB) {
+            if (!pointA || !pointB) return null;
+            // 获取极角
+            let angA = getAngleFromCenter(pointA.x, pointA.y);
+            let angB = getAngleFromCenter(pointB.x, pointB.y);
+            let delta = Math.abs(angA - angB);
+            // 圆心角劣弧对应的圆心角度数(小角) 弧度 -> 度数
+            let minorCentralRad = Math.min(delta, 2 * Math.PI - delta);
+            let minorCentralDeg = minorCentralRad * 180 / Math.PI;
+            // 劣弧上的圆周角 = 圆心角 / 2
+            let arcAngle = minorCentralDeg / 2;
+            // 处理极限情况: 两点重合时minorCentralDeg=0, arcAngle=0 (理论上重合无效，但这里返回null)
+            if (minorCentralDeg === 0) return null;   // 重合无效
+            // 确保结果在 (0,90] 区间，返回保留小数
+            return Math.min(90, Math.max(0, arcAngle));
+        }
+        
+        // 根据当前弦计算得分 (基于 targetAngle)
+        function computeScoreFromArc(arcAngle) {
+            if (arcAngle === null) return 0;
+            let diff = Math.abs(arcAngle - targetAngle);
+            // 得分 = max(0, 100 - diff * 2)   diff每1度扣2分，上限100，下限0
+            let score = Math.max(0, 100 - diff * 2);
+            // 保留整数，但展示整数更直观
+            return Math.floor(score);
+        }
+        
+        // 当两点都存在时，更新本轮得分和显示
+        function updateRoundByPoints() {
+            if (pointA && pointB) {
+                // 防止两点过于接近 (判定重合)
+                const dx = pointA.x - pointB.x;
+                const dy = pointA.y - pointB.y;
+                const dist = Math.hypot(dx, dy);
+                if (dist < 1e-2) {
+                    feedbackMsgDiv.innerHTML = "⚠️ 两点重合！请重新选择两个不同的圆上点。";
+                    lastComputedArcAngle = null;
+                    currentRoundScore = 0;
+                    updateUI();
+                    drawCanvas(); // 重绘清除弦显示
+                    return;
+                }
+                let arc = computeArcAngle(pointA, pointB);
+                if (arc === null) {
+                    feedbackMsgDiv.innerHTML = "❓ 无法计算角度，请选择两个不同点。";
+                    lastComputedArcAngle = null;
+                    currentRoundScore = 0;
+                    updateUI();
+                    drawCanvas();
+                    return;
+                }
+                lastComputedArcAngle = arc;
+                let score = computeScoreFromArc(arc);
+                currentRoundScore = score;
+                updateUI();
+                // 显示反馈消息，包含公式和鼓励
+                feedbackMsgDiv.innerHTML = `🎉 弦所对劣弧圆周角 = ${arc.toFixed(1)}° &nbsp; | &nbsp; 目标 ${targetAngle.toFixed(1)}°<br> 差值 = ${Math.abs(arc - targetAngle).toFixed(1)}° → 本轮得分 ${score} 分！ ${score===100?"🎯完美！":score>=80?"👍很不错！":"💪再试试调整弦！"}`;
+                drawCanvas(); // 重绘显示弦和点
+            } else {
+                // 不足两点时，清除显示
+                lastComputedArcAngle = null;
+                currentRoundScore = 0;
+                updateUI();
+                drawCanvas();
+                if (pointA && !pointB) {
+                    feedbackMsgDiv.innerHTML = `👉 已选第一个点，再点击圆上另一点确定弦。 (目标角度 ${targetAngle.toFixed(1)}°)`;
+                } else {
+                    feedbackMsgDiv.innerHTML = `🎯 目标角度 = ${targetAngle.toFixed(1)}° 。请在圆上点击两点，形成弦，系统将计算劣弧所对圆周角并评分！`;
+                }
+            }
+        }
+        
+        // ---------- 圆上点击检测 (像素误差容差) ----------
+        function isOnCircle(px, py, tolerance = 12) {
+            const dx = px - center.x;
+            const dy = py - center.y;
+            const dist = Math.hypot(dx, dy);
+            return Math.abs(dist - radius) <= tolerance;
+        }
+        
+        // 获取圆上的精确点(根据鼠标坐标投影到圆周上，保证点在圆上)
+        function snapToCircle(px, py) {
+            const dx = px - center.x;
+            const dy = py - center.y;
+            const dist = Math.hypot(dx, dy);
+            if (dist === 0) return { x: center.x + radius, y: center.y };
+            const ratio = radius / dist;
+            const newX = center.x + dx * ratio;
+            const newY = center.y + dy * ratio;
+            return { x: newX, y: newY };
+        }
+        
+        // 处理canvas点击: 增加点（逻辑：未满两点则添加；已有两点则自动重置并重新从当前点击作为第一个点）
+        function handleCanvasClick(e) {
+            // 获取点击坐标 (支持触摸)
+            let clientX, clientY;
+            if (e.touches) {
+                e.preventDefault();
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            let canvasX = (clientX - rect.left) * scaleX;
+            let canvasY = (clientY - rect.top) * scaleY;
+            canvasX = Math.min(Math.max(0, canvasX), canvas.width);
+            canvasY = Math.min(Math.max(0, canvasY), canvas.height);
+            
+            // 检查是否在圆上 (容差内)
+            if (!isOnCircle(canvasX, canvasY, 15)) {
+                feedbackMsgDiv.innerHTML = "⚠️ 点击位置不在圆周上！请点击圆的边界附近。";
+                return;
+            }
+            // 投影到精确圆周上
+            const precisePoint = snapToCircle(canvasX, canvasY);
+            
+            // 逻辑: 如果已经有两点，则清空两点并将当前点击作为第一个点
+            if (pointA !== null && pointB !== null) {
+                // 已有完整两点: 自动重置，开始新弦
+                pointA = precisePoint;
+                pointB = null;
+                feedbackMsgDiv.innerHTML = `✨ 已重置两点，现在第一个点已选在 (${Math.round(precisePoint.x)}, ${Math.round(precisePoint.y)})，请点击第二个点。`;
+                updateRoundByPoints(); // 此时点不全，会清除得分
+                drawCanvas();
+                return;
+            }
+            
+            // 情况1: 没有点 A
+            if (pointA === null) {
+                pointA = precisePoint;
+                feedbackMsgDiv.innerHTML = `📍 已选第一个点 (${Math.round(precisePoint.x)}, ${Math.round(precisePoint.y)})，再点击圆上另一个点确定弦。`;
+                updateRoundByPoints();
+                drawCanvas();
+                return;
+            }
+            
+            // 情况2: 已有A，无B
+            if (pointA !== null && pointB === null) {
+                // 检查新点与A是否过于接近 (避免重合)
+                const dx = pointA.x - precisePoint.x;
+                const dy = pointA.y - precisePoint.y;
+                const dist = Math.hypot(dx, dy);
+                if (dist < 5) {
+                    feedbackMsgDiv.innerHTML = "⚠️ 两个点过于接近（重合），请选择另一个不同的点！";
+                    return;
+                }
+                pointB = precisePoint;
+                feedbackMsgDiv.innerHTML = `🎯 第二个点已选！计算劣弧所对圆周角中...`;
+                updateRoundByPoints();   // 此时两点齐全，计算得分
+                drawCanvas();
+                return;
+            }
+        }
+        
+        // ---------- 绘图函数（圆，点，弦，劣弧示意）----------
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // 背景网格 (浅)
+            ctx.save();
+            ctx.strokeStyle = "#d9cba3";
+            ctx.lineWidth = 0.6;
+            for (let i = 0; i <= canvas.width; i += 40) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, canvas.height);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(canvas.width, i);
+                ctx.stroke();
+            }
+            // 画坐标轴辅助
+            ctx.beginPath();
+            ctx.moveTo(canvas.width/2, 0);
+            ctx.lineTo(canvas.width/2, canvas.height);
+            ctx.moveTo(0, canvas.height/2);
+            ctx.lineTo(canvas.width, canvas.height/2);
+            ctx.strokeStyle = "#bcab7a";
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            
+            // 画圆
+            ctx.beginPath();
+            ctx.arc(center.x, center.y, radius, 0, 2 * Math.PI);
+            ctx.fillStyle = "rgba(255, 235, 190, 0.25)";
+            ctx.fill();
+            ctx.strokeStyle = "#e67e22";
+            ctx.lineWidth = 3.5;
+            ctx.stroke();
+            
+            // 圆心
+            ctx.beginPath();
+            ctx.arc(center.x, center.y, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = "#c0392b";
+            ctx.fill();
+            ctx.fillStyle = "#1e2a1f";
+            ctx.font = "bold 15px 'Segoe UI'";
+            ctx.fillText("O", center.x - 10, center.y - 6);
+            
+            // 半径标记
+            ctx.beginPath();
+            ctx.moveTo(center.x, center.y);
+            ctx.lineTo(center.x + radius, center.y);
+            ctx.strokeStyle = "#e67e22";
+            ctx.setLineDash([6, 8]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = "#b45f2b";
+            ctx.font = "500 12px 'Segoe UI'";
+            ctx.fillText(`r = ${radius}px`, center.x + radius/2 - 20, center.y - 8);
+            
+            // 绘制点A, B 以及弦
+            if (pointA) {
+                ctx.beginPath();
+                ctx.arc(pointA.x, pointA.y, 7, 0, 2 * Math.PI);
+                ctx.fillStyle = "#2c6e9e";
+                ctx.shadowBlur = 3;
+                ctx.fill();
+                ctx.fillStyle = "white";
+                ctx.font = "bold 14px 'Segoe UI'";
+                ctx.fillText("A", pointA.x - 5, pointA.y - 5);
+                ctx.shadowBlur = 0;
+            }
+            if (pointB) {
+                ctx.beginPath();
+                ctx.arc(pointB.x, pointB.y, 7, 0, 2 * Math.PI);
+                ctx.fillStyle = "#2c6e9e";
+                ctx.fill();
+                ctx.fillStyle = "white";
+                ctx.fillText("B", pointB.x - 5, pointB.y - 5);
+            }
+            if (pointA && pointB) {
+                // 画弦
+                ctx.beginPath();
+                ctx.moveTo(pointA.x, pointA.y);
+                ctx.lineTo(pointB.x, pointB.y);
+                ctx.strokeStyle = "#d35400";
+                ctx.lineWidth = 3;
+                ctx.setLineDash([]);
+                ctx.stroke();
+                
+                // 绘制劣弧指示虚线 (修改为劣弧)
+                const angleA = getAngleFromCenter(pointA.x, pointA.y);
+                const angleB = getAngleFromCenter(pointB.x, pointB.y);
+                let delta = Math.abs(angleA - angleB);
+                let startAngle = angleA;
+                let endAngle = angleB;
+                // 保证绘制的是劣弧 (圆心角小于180°)
+                if (delta > Math.PI) {
+                    // 如果delta大于π，说明当前选择的弧是优弧，需要反向取劣弧
+                    startAngle = angleB;
+                    endAngle = angleA;
+                    delta = 2 * Math.PI - delta;
+                }
+                // 确保startAngle < endAngle 便于绘制
+                if (startAngle > endAngle) {
+                    let temp = startAngle;
+                    startAngle = endAngle;
+                    endAngle = temp;
+                }
+                ctx.beginPath();
+                ctx.arc(center.x, center.y, radius + 5, startAngle, endAngle);
+                ctx.strokeStyle = "#ffaa55";
+                ctx.lineWidth = 3;
+                ctx.setLineDash([8, 12]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // 显示劣弧圆周角数值
+                if (lastComputedArcAngle !== null) {
+                    ctx.fillStyle = "#b64926";
+                    ctx.font = "bold 16px 'Segoe UI'";
+                    ctx.shadowBlur = 0;
+                    ctx.fillText(`劣弧圆周角 = ${lastComputedArcAngle.toFixed(1)}°`, center.x - 85, center.y - radius - 8);
+                }
+            }
+            // 额外标注目标角度
+            ctx.fillStyle = "#5c3b1f";
+            ctx.font = "500 14px 'Segoe UI'";
+            ctx.fillText(`🎯 目标角: ${targetAngle.toFixed(1)}°`, center.x + radius - 95, center.y - radius + 18);
+        }
+        
+        // ---------- 清除点 ----------
+        function clearPoints() {
+            pointA = null;
+            pointB = null;
+            lastComputedArcAngle = null;
+            currentRoundScore = 0;
+            updateUI();
+            drawCanvas();
+            feedbackMsgDiv.innerHTML = `🗑️ 已清除两个点。重新点击圆上两点挑战当前目标角度 ${targetAngle.toFixed(1)}°。`;
+        }
+        
+        // ---------- 下一题: 累计总分，重置本轮得分，刷新目标角度，清除点 ----------
+        function nextRound() {
+            // 累计总分: 加上当前轮得分 (currentRoundScore)
+            totalPoints += currentRoundScore;
+            // 生成新的随机目标角度 0~90 度 (保留一位小数)
+            const newTarget = Math.floor(Math.random() * 901) / 10;  // 0.0 ~ 90.0
+            targetAngle = newTarget;
+            // 重置本轮相关数据
+            pointA = null;
+            pointB = null;
+            lastComputedArcAngle = null;
+            currentRoundScore = 0;
+            // 刷新界面
+            updateUI();
+            drawCanvas();
+            feedbackMsgDiv.innerHTML = `✨ 新回合！目标角度更新为 ${targetAngle.toFixed(1)}° 。点击圆上两点，获得劣弧圆周角并赚取分数！本轮得分将计入总分。`;
+        }
+        
+        // ---------- 事件绑定 ----------
+        function bindEvents() {
+            canvas.addEventListener('click', handleCanvasClick);
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const fakeEvent = { clientX: touch.clientX, clientY: touch.clientY, touches: e.touches };
+                handleCanvasClick(fakeEvent);
+            });
+            clearPointsBtn.addEventListener('click', clearPoints);
+            nextRoundBtn.addEventListener('click', nextRound);
+        }
+        
+        // ---------- 初始化游戏 ----------
+        function initGame() {
+            targetAngle = 45.0;
+            totalPoints = 0;
+            currentRoundScore = 0;
+            pointA = null;
+            pointB = null;
+            lastComputedArcAngle = null;
+            updateUI();
+            drawCanvas();
+            feedbackMsgDiv.innerHTML = "🎉 弧角挑战赛（劣弧版）开始！目标角度45°，点击圆上两点确定弦，劣弧所对圆周角越接近目标得分越高！";
+        }
+        
+        // 窗口重绘适配
+        window.addEventListener('resize', () => { drawCanvas(); });
+        bindEvents();
+        initGame();
+    })();
+</script>
+</body>
+</html>
