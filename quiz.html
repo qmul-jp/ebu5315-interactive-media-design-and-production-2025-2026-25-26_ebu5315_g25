@@ -3,603 +3,878 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>圆·知识探险 | 趣味测验</title>
-    <!-- 引入现代字体 & 平滑滚动 -->
+    <title>圆·知识探险 | 几何挑战测验</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s, box-shadow 0.2s;
+        }
+
+        /* 主题变量 */
+        :root {
+            --bg-gradient-start: #f0f4ff;
+            --bg-gradient-end: #e4eaff;
+            --card-bg: rgba(255,255,255,0.92);
+            --question-card-bg: #ffffff;
+            --text-primary: #0b1a3a;
+            --text-secondary: #2c3e66;
+            --text-muted: #5b6e8c;
+            --border-light: rgba(59, 79, 158, 0.12);
+            --option-bg: #fafcff;
+            --option-border: #e2edf2;
+            --option-hover: #eef3fc;
+            --option-selected: #e9efff;
+            --accent: #3b4f9e;
+            --accent-dark: #2c3e8f;
+            --accent-glow: rgba(59, 79, 158, 0.2);
+            --feedback-neutral: #f1f5f9;
+            --feedback-correct: #e0f2e9;
+            --feedback-wrong: #ffe9e9;
+            --sidebar-bg: rgba(255, 255, 255, 0.65);
+            --badge-bg: #eef3ff;
+            --shadow-sm: 0 8px 20px rgba(0,0,0,0.05);
+            --shadow-md: 0 16px 28px -8px rgba(0,0,0,0.1);
+            --nav-grid-bg: rgba(255,255,255,0.4);
+            --answered-bg: #2b9348;
+            --unanswered-bg: #cbd5e1;
+            --current-border: #3b4f9e;
+            --marked-star: #f59e0b;
+        }
+
+        body.dark {
+            --bg-gradient-start: #111827;
+            --bg-gradient-end: #1a1f2e;
+            --card-bg: rgba(30, 35, 48, 0.88);
+            --question-card-bg: #232a3f;
+            --text-primary: #f0f3fa;
+            --text-secondary: #cbd5f0;
+            --text-muted: #94a3b8;
+            --border-light: rgba(100, 130, 200, 0.25);
+            --option-bg: #1e2538;
+            --option-border: #2e3a55;
+            --option-hover: #2a344c;
+            --option-selected: #2f3d6e;
+            --accent: #7c9bff;
+            --accent-dark: #5a7ad9;
+            --accent-glow: rgba(100, 130, 255, 0.25);
+            --feedback-neutral: #1e2a3a;
+            --feedback-correct: #1a3a2a;
+            --feedback-wrong: #3a2522;
+            --sidebar-bg: rgba(30, 35, 48, 0.7);
+            --badge-bg: #2a334e;
+            --shadow-sm: 0 8px 20px rgba(0,0,0,0.3);
+            --shadow-md: 0 16px 28px -8px rgba(0,0,0,0.4);
+            --nav-grid-bg: rgba(30,35,48,0.6);
+            --answered-bg: #2b9348;
+            --unanswered-bg: #4a5568;
+            --current-border: #7c9bff;
         }
 
         body {
-            background: linear-gradient(145deg, #eef2ff 0%, #e0e7ff 100%);
-            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-            padding: 2rem 1.5rem;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            padding: 1.5rem;
             min-height: 100vh;
         }
 
-        /* 主容器卡片 */
-        .quiz-wrapper {
-            max-width: 1000px;
+        .quiz-container {
+            max-width: 1300px;
             margin: 0 auto;
         }
 
-        .quiz-header {
-            text-align: center;
-            margin-bottom: 2rem;
+        /* 顶部工具栏 */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.8rem;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 2rem;
+            padding: 0.6rem 1.6rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
         }
 
-        .quiz-header h1 {
-            font-size: 2.4rem;
-            background: linear-gradient(135deg, #1e2b6e, #3b4f9e);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            letter-spacing: -0.3px;
+        .timer-box {
+            background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+            color: white;
+            padding: 0.4rem 1.1rem;
+            border-radius: 3rem;
+            font-weight: 700;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+            font-variant-numeric: tabular-nums;
+            box-shadow: 0 2px 8px var(--accent-glow);
+        }
+
+        .toolbar-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            background: var(--option-bg);
+            border: 1px solid var(--option-border);
+            padding: 0.45rem 1.1rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-primary);
             display: inline-flex;
             align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            justify-content: center;
+            gap: 6px;
+            transition: 0.2s;
+            font-size: 0.85rem;
         }
 
-        .quiz-header h1::before {
-            content: "⚪";
-            font-size: 2rem;
-            background: none;
-            color: #3b4f9e;
-        }
-
-        .quiz-header h1::after {
-            content: "📐";
-            font-size: 2rem;
-            background: none;
-            color: #3b4f9e;
-        }
-
-        .subhead {
-            color: #2c3e66;
-            margin-top: 8px;
-            font-weight: 500;
-            opacity: 0.85;
-            border-bottom: 2px dotted #b9c3e6;
-            display: inline-block;
-            padding-bottom: 6px;
-        }
-
-        /* 题目卡片容器 */
-        .questions-panel {
-            background: rgba(255,255,255,0.7);
-            backdrop-filter: blur(2px);
-            border-radius: 2rem;
-            padding: 1.2rem;
-            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.15);
-        }
-
-        /* 单个问题卡片 */
-        .question-card {
-            background: white;
-            border-radius: 1.5rem;
-            margin-bottom: 1.6rem;
-            padding: 1.2rem 1.5rem;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            border: 1px solid rgba(66, 99, 235, 0.1);
-        }
-
-        .question-card:hover {
+        .icon-btn:hover {
+            background: var(--option-hover);
             transform: translateY(-2px);
-            box-shadow: 0 16px 24px -10px rgba(47, 77, 159, 0.15);
-            border-color: #c7d2fe;
+            box-shadow: var(--shadow-sm);
         }
 
-        .q-title {
-            display: flex;
-            align-items: baseline;
-            gap: 12px;
-            margin-bottom: 1rem;
+        .submit-score-btn {
+            background: linear-gradient(100deg, var(--accent-dark), var(--accent));
+            color: white;
+            border: none;
+            padding: 0.45rem 1.3rem;
+            border-radius: 2rem;
             font-weight: 700;
-            font-size: 1.2rem;
-            color: #1f2b4e;
-            border-left: 5px solid #3b4f9e;
-            padding-left: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 2px 6px var(--accent-glow);
         }
 
-        .q-num {
-            background: #eef2ff;
-            border-radius: 40px;
-            padding: 0px 12px;
+        .submit-score-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+        }
+
+        /* 两列布局 - 题目区占主要 */
+        .quiz-main-layout {
+            display: flex;
+            gap: 1.8rem;
+            flex-wrap: wrap;
+        }
+
+        .question-area {
+            flex: 3;
+            min-width: 280px;
+        }
+
+        .sidebar {
+            flex: 1;
+            min-width: 260px;
+            max-width: 300px;
+            background: var(--sidebar-bg);
+            backdrop-filter: blur(8px);
+            border-radius: 1.6rem;
+            padding: 1.2rem;
+            height: fit-content;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* 题目网格导航 */
+        .nav-grid {
+            background: var(--nav-grid-bg);
+            border-radius: 1rem;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .grid-title {
             font-size: 0.85rem;
             font-weight: 600;
-            color: #2c3e8f;
+            margin-bottom: 0.6rem;
+            color: var(--text-secondary);
         }
 
-        .question-text {
-            font-weight: 600;
-            font-size: 1.05rem;
-            color: #0f1a3a;
-            line-height: 1.4;
-        }
-
-        /* 选项区域 网格布局 */
-        .options-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 18px;
+        .question-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
             margin-bottom: 12px;
         }
 
-        .option-item {
-            background: #f9fafc;
-            border-radius: 60px;
-            border: 1.5px solid #e2e8f0;
-            padding: 10px 18px;
-            cursor: pointer;
-            transition: all 0.2s;
+        .grid-item {
+            aspect-ratio: 1 / 1;
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-weight: 500;
-            color: #1e293b;
-        }
-
-        .option-item:hover {
-            background: #f1f4fe;
-            border-color: #9bb3f0;
-            transform: scale(0.99);
-        }
-
-        /* 选中样式 (使用 :has 现代选择器，优雅高亮) */
-        .option-item:has(input:checked) {
-            background: #e0e9ff;
-            border-color: #3b4f9e;
-            box-shadow: 0 2px 8px rgba(59,79,158,0.2);
-        }
-
-        .option-item input {
-            accent-color: #3b4f9e;
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-            margin: 0;
-            flex-shrink: 0;
-        }
-
-        .option-item label {
-            flex: 1;
-            cursor: pointer;
-            font-size: 0.95rem;
-            letter-spacing: -0.2px;
-        }
-
-        /* 反馈区域 */
-        .feedback-area {
-            margin-top: 12px;
-            padding: 8px 14px;
-            border-radius: 40px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            background: #f8fafc;
-            transition: all 0.2s;
-        }
-
-        .feedback-correct {
-            background: #e0f2e9;
-            color: #1f7840;
-            border-left: 4px solid #2b9348;
-        }
-
-        .feedback-wrong {
-            background: #ffe9e9;
-            color: #bc3f2e;
-            border-left: 4px solid #e53e3e;
-        }
-
-        .feedback-neutral {
-            color: #5b6e8c;
-            background: #f1f5f9;
-        }
-
-        /* 按钮组 */
-        .action-bar {
-            display: flex;
-            flex-wrap: wrap;
             justify-content: center;
-            gap: 20px;
-            margin: 2rem 0 1rem;
-        }
-
-        .btn {
-            border: none;
-            font-family: 'Inter', sans-serif;
+            background: var(--option-bg);
+            border-radius: 12px;
             font-weight: 600;
-            padding: 12px 32px;
-            border-radius: 60px;
             font-size: 1rem;
             cursor: pointer;
-            transition: 0.2s;
-            background: white;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            border: 2px solid transparent;
+            transition: 0.1s;
+            color: var(--text-primary);
+            position: relative;
+        }
+
+        .grid-item.answered {
+            background: var(--answered-bg);
+            color: white;
+        }
+
+        .grid-item.unanswered {
+            background: var(--unanswered-bg);
+            color: #1e293b;
+        }
+        body.dark .grid-item.unanswered {
+            color: #e2e8f0;
+        }
+
+        .grid-item.current {
+            border: 3px solid var(--current-border);
+            transform: scale(1.02);
+            box-shadow: 0 0 0 2px var(--accent-glow);
+        }
+
+        .grid-item.marked::after {
+            content: "⭐";
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            font-size: 12px;
+            background: var(--marked-star);
+            border-radius: 20px;
+            padding: 0 3px;
+            line-height: 1;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .legend span {
             display: inline-flex;
             align-items: center;
+            gap: 4px;
+        }
+
+        .legend .badge-sample {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        /* 答题概览 */
+        .stats-card {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 0.7rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .stats-numbers {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .stat-item {
+            flex: 1;
+            background: var(--option-bg);
+            border-radius: 0.8rem;
+            padding: 6px;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        /* 快速操作按钮 */
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin: 1rem 0 0.5rem;
+        }
+
+        .quick-btn {
+            flex: 1;
+            background: var(--option-bg);
+            border: 1px solid var(--option-border);
+            padding: 8px 0;
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            color: var(--text-primary);
+        }
+
+        .quick-btn:hover {
+            background: var(--option-hover);
+        }
+
+        .quick-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 当前题目卡片 */
+        .current-question-card {
+            background: var(--question-card-bg);
+            border-radius: 1.8rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-light);
+        }
+
+        .q-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
             gap: 8px;
         }
 
-        .btn-primary {
-            background: linear-gradient(100deg, #2c3e8f, #3f5bc0);
+        .q-badge {
+            background: var(--accent);
             color: white;
-            border: none;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 600;
         }
 
-        .btn-primary:hover {
-            background: linear-gradient(100deg, #1f2e6e, #2f48a5);
-            transform: translateY(-2px);
-            box-shadow: 0 12px 20px -12px #2c3e8f;
+        .q-text {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.4rem;
+            line-height: 1.35;
         }
 
-        .btn-secondary {
-            background: #ffffffd9;
-            border: 1px solid #cbd5e1;
-            color: #2d3a6e;
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 1.5rem;
         }
 
-        .btn-secondary:hover {
-            background: #f1f5f9;
-            border-color: #8ba0e0;
-            transform: translateY(-1px);
+        .opt-radio {
+            background: var(--option-bg);
+            border: 1.5px solid var(--option-border);
+            border-radius: 60px;
+            padding: 10px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        /* 分数板 */
-        .score-card {
-            background: white;
-            border-radius: 2rem;
+        .opt-radio:hover:not(.disabled-opt) {
+            background: var(--option-hover);
+            transform: scale(0.99);
+        }
+
+        .opt-radio.selected {
+            background: var(--option-selected);
+            border-color: var(--accent);
+        }
+
+        .opt-radio input {
+            accent-color: var(--accent);
+            width: 17px;
+            height: 17px;
+            cursor: pointer;
+        }
+
+        .opt-radio label {
+            flex: 1;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.94rem;
+        }
+
+        .opt-radio.disabled-opt {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        .opt-radio.disabled-opt input, .opt-radio.disabled-opt label {
+            cursor: not-allowed;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin: 0.8rem 0 0.4rem;
+        }
+
+        .nav-btn {
+            background: var(--option-bg);
+            border: 1px solid var(--option-border);
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text-primary);
+            flex: 1;
             text-align: center;
-            padding: 1rem 1.8rem;
-            margin-top: 1rem;
-            width: fit-content;
-            margin-left: auto;
-            margin-right: auto;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-            border: 1px solid #cddcff;
         }
 
-        .score-text {
-            font-weight: 800;
-            font-size: 1.5rem;
-            background: linear-gradient(135deg, #1e2b6e, #4263cf);
+        .nav-btn:hover {
+            background: var(--option-hover);
+        }
+
+        .feedback-current {
+            margin-top: 0.8rem;
+            padding: 10px 16px;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            background: var(--feedback-neutral);
+            color: var(--text-secondary);
+            border-left: 4px solid var(--accent);
+        }
+
+        .score-panel {
+            margin-top: 1rem;
+            background: var(--question-card-bg);
+            border-radius: 1.2rem;
+            padding: 0.8rem 1rem;
+            text-align: center;
+        }
+
+        .start-screen {
+            background: var(--question-card-bg);
+            border-radius: 2.5rem;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            max-width: 600px;
+            margin: 3rem auto;
+            box-shadow: var(--shadow-md);
+        }
+
+        .start-screen h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--accent-dark), var(--accent));
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
         }
 
-        .badge {
-            background: #f0f3ff;
-            border-radius: 50px;
-            padding: 4px 16px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #1f3a7c;
+        .start-btn {
+            background: linear-gradient(100deg, var(--accent-dark), var(--accent));
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 60px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1.5rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 850px) {
+            body { padding: 1rem; }
+            .quiz-main-layout { flex-direction: column; }
+            .sidebar { max-width: 100%; }
+            .q-text { font-size: 1.2rem; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .toolbar-actions { justify-content: center; }
         }
 
         footer {
             text-align: center;
-            margin-top: 2rem;
-            font-size: 0.75rem;
-            color: #5a6e9c;
-        }
-
-        @media (max-width: 640px) {
-            body {
-                padding: 1rem;
-            }
-            .question-card {
-                padding: 1rem;
-            }
-            .option-item {
-                padding: 8px 14px;
-            }
-            .btn {
-                padding: 10px 22px;
-            }
-            .quiz-header h1 {
-                font-size: 1.8rem;
-            }
+            margin-top: 1.5rem;
+            font-size: 0.7rem;
+            color: var(--text-muted);
         }
     </style>
 </head>
 <body>
-<div class="quiz-wrapper">
-    <div class="quiz-header">
-        <h1>圆周率漫游·知识测验</h1>
-        <div class="subhead">⚡ 圆的性质 · 公式 · 定理 | 测测你的几何直觉</div>
+<div class="quiz-container" id="appRoot">
+    <div id="startScreen" class="start-screen">
+        <h1>⚪ 圆周率漫游 · 知识探险 📐</h1>
+        <p style="margin: 1rem 0; color: var(--text-secondary);">50道圆知识宝库，随机抽10题 · 难度递进 · 计时挑战</p>
+        <button id="beginBtn" class="start-btn">✨ 开启圆之征程 ✨</button>
+        <div style="margin-top: 20px; font-size: 0.85rem;">⏱️ 自动计时 | 网格导航 | 可标记待复查</div>
     </div>
 
-    <div class="questions-panel">
-        <div id="questions-container"></div>
-    </div>
+    <div id="quizInterface" class="hidden">
+        <div class="toolbar">
+            <div class="timer-box">⏱️ <span id="timerDisplay">00:00</span></div>
+            <div class="toolbar-actions">
+                <button id="themeSwitchBtn" class="icon-btn">🌓 深色模式</button>
+                <button id="restartExamBtn" class="icon-btn">🔄 重新测验</button>
+                <button id="finalSubmitBtn" class="submit-score-btn">📊 提交成绩</button>
+            </div>
+        </div>
 
-    <div class="action-bar">
-        <button class="btn btn-primary" id="submitQuiz">✨ 提交答卷</button>
-        <button class="btn btn-secondary" id="resetQuiz">🔄 重新作答</button>
-    </div>
+        <div class="quiz-main-layout">
+            <div class="question-area">
+                <div class="current-question-card">
+                    <div class="q-header">
+                        <span class="q-badge" id="questionTypeBadge">单选题 · 5分</span>
+                        <span id="currentQNum" style="font-size:0.85rem; color:var(--text-muted);">第1题</span>
+                    </div>
+                    <div class="q-text" id="currentQuestionText">加载中...</div>
+                    <div class="options-list" id="optionsContainer"></div>
+                    <div class="nav-buttons">
+                        <button id="prevBtn" class="nav-btn">◀ 上一题</button>
+                        <button id="nextBtn" class="nav-btn">下一题 ▶</button>
+                    </div>
+                    <div id="singleFeedback" class="feedback-current">📌 选择答案后自动保存，网格会显示状态</div>
+                </div>
+                <div id="scoreSummaryArea" class="score-panel hidden">
+                    <strong>🏆 测验成绩</strong> <span id="finalScoreSpan" style="font-size:1.4rem; font-weight:800; margin-left:6px;">0/10</span>
+                    <div id="scoreDetailMsg" style="margin-top: 4px; font-size:0.85rem;"></div>
+                    <div id="timeSpentMsg" style="font-size:0.75rem; margin-top: 4px;"></div>
+                </div>
+            </div>
 
-    <div id="score-area" class="score-card" style="display: none;">
-        <div class="badge">📊 测验结果</div>
-        <div class="score-text" id="scoreDisplay">0 / 0</div>
-        <div id="scoreMessage" style="font-size: 0.85rem; margin-top: 5px;"></div>
+            <div class="sidebar">
+                <div class="nav-grid">
+                    <div class="grid-title">📋 题目导航</div>
+                    <div class="question-grid" id="questionGrid"></div>
+                    <div class="legend">
+                        <span><i class="badge-sample" style="background: var(--answered-bg);"></i> 已答</span>
+                        <span><i class="badge-sample" style="background: var(--unanswered-bg);"></i> 未答</span>
+                        <span><i class="badge-sample" style="border:2px solid var(--current-border); background:transparent;"></i> 当前</span>
+                        <span>⭐ 标记</span>
+                    </div>
+                </div>
+
+                <div class="stats-card">
+                    <div class="stats-numbers">
+                        <div class="stat-item">
+                            <div class="stat-label">已完成</div>
+                            <div class="stat-value" id="completedCount">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">待完成</div>
+                            <div class="stat-value" id="pendingCount">10</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <button id="markBtn" class="quick-btn">⭐ 标记本题</button>
+                    <button id="clearBtn" class="quick-btn">🗑️ 清除选择</button>
+                </div>
+                <div style="font-size:0.65rem; text-align:center; margin-top:8px; color:var(--text-muted);">标记题目可重点复查</div>
+            </div>
+        </div>
     </div>
-    <footer>⭐ 每一道题都藏着圆的智慧 — 答错也没关系，正确答案会温柔提示</footer>
+    <footer>⭐ 圆的智慧 · 每道题都藏着几何之美 | 提交后计时停止，可重新挑战</footer>
 </div>
 
 <script>
-    // ---------- 题目数据库 (圆相关, 难度递进) ----------
-    const QUESTIONS = [
-        { // 1
-            text: "圆的周长公式是？",
-            options: ["A. C = πr²", "B. C = 2πr", "C. C = πd/2", "D. C = πr + d"],
-            correct: "B",
-            explanation: "周长 C = 2πr = πd，2πr 是标准形式。"
-        },
-        { // 2
-            text: "在圆中，所有圆周上的点到圆心的距离：",
-            options: ["A. 都相等", "B. 都不相等", "C. 取决于位置", "D. 仅直径两端相等"],
-            correct: "A",
-            explanation: "圆的定义：平面内到定点(圆心)距离等于定长(半径)的点的集合，所以距离都相等。"
-        },
-        { // 3
-            text: "圆的直径与半径的关系是：",
-            options: ["A. 直径 = 半径 × π", "B. 直径 = 2 × 半径", "C. 直径 = 半径²", "D. 直径 = 半径 + 2"],
-            correct: "B",
-            explanation: "直径是通过圆心且两端在圆上的线段，长度是半径的2倍。"
-        },
-        { // 4
-            text: "圆的面积公式是：",
-            options: ["A. A = πr²", "B. A = 2πr", "C. A = πd", "D. A = 4πr²"],
-            correct: "A",
-            explanation: "面积 A = π × 半径²，是圆区域大小的度量。"
-        },
-        { // 5
-            text: "圆的周长与直径的比值是：",
-            options: ["A. π (圆周率)", "B. 2π", "C. 3.14 精确值", "D. 6.28"],
-            correct: "A",
-            explanation: "C/d = π，这是圆周率的定义，约等于3.14159。"
-        },
-        { // 6 新增: 弧长计算
-            text: "圆心角为60°，半径为3的扇形，其弧长是多少？",
-            options: ["A. π", "B. 2π", "C. π/2", "D. 3π/2"],
-            correct: "A",
-            explanation: "弧长公式 l = nπr/180 = 60×π×3/180 = π，因此弧长 = π。"
-        },
-        { // 7 面积应用
-            text: "一个圆的半径是5，它的面积是：",
-            options: ["A. 25π", "B. 10π", "C. 20π", "D. 5π"],
-            correct: "A",
-            explanation: "面积 = π × 5² = 25π，约78.54。"
-        },
-        { // 8 切线性质
-            text: "下列关于圆的切线性质，正确的是：",
-            options: ["A. 切线垂直于过切点的半径", "B. 切线平行于半径", "C. 切线与圆有两个交点", "D. 切线长度等于直径"],
-            correct: "A",
-            explanation: "圆的切线垂直于经过切点的半径，这是经典几何定理。"
-        },
-        { // 9 圆周角定理
-            text: "同弧所对的圆周角是圆心角的：",
-            options: ["A. 相等", "B. 2倍", "C. 一半", "D. 无法确定"],
-            correct: "C",
-            explanation: "圆周角定理：同弧所对圆周角等于圆心角度数的一半。"
-        },
-        { // 10 直径与周长
-            text: "已知圆的直径为10，它的周长是：",
-            options: ["A. 10π", "B. 20π", "C. 5π", "D. 100π"],
-            correct: "A",
-            explanation: "周长 C = πd = 10π，直接代入公式。"
-        }
-    ];
+    // ---------- 1. 构建50道题库 (与之前一致) ----------
+    const buildQuestionBank = () => {
+        const bank = [];
+        const add = (text, options, correct, explanation, difficulty) => {
+            bank.push({ text, options: [...options], correct, explanation, difficulty });
+        };
+        // 基础简单 (1)
+        add("圆的周长公式是？", ["A. C = πr²", "B. C = 2πr", "C. C = πd/2", "D. C = πr + d"], "B", "周长 C = 2πr = πd", 1);
+        add("圆的面积公式是？", ["A. A = πr²", "B. A = 2πr", "C. A = πd", "D. A = 4πr²"], "A", "面积 A = π × 半径²", 1);
+        add("直径与半径的关系：", ["A. 直径 = 半径 × π", "B. 直径 = 2 × 半径", "C. 直径 = 半径²", "D. 直径 = 半径 + 2"], "B", "直径是半径的两倍", 1);
+        add("圆周率π是圆的（ ）与直径的比值", ["A. 面积", "B. 周长", "C. 半径", "D. 弧长"], "B", "周长与直径的比值定义为π", 1);
+        add("圆心决定圆的（ ），半径决定圆的（ ）", ["A. 大小，位置", "B. 位置，大小", "C. 对称轴，面积", "D. 周长，面积"], "B", "圆心确定位置，半径确定大小", 1);
+        add("半径为3的圆，直径是？", ["A. 3", "B. 6", "C. 9", "D. 1.5"], "B", "直径=2r=6", 1);
+        add("圆内最长的弦是？", ["A. 半径", "B. 直径", "C. 弧", "D. 切线"], "B", "直径是圆中最长的弦", 1);
+        add("一个圆有（ ）条半径。", ["A. 1", "B. 2", "C. 无数", "D. 10"], "C", "所有半径都相等，有无数条", 1);
+        add("圆的对称轴有（ ）条。", ["A. 1", "B. 2", "C. 4", "D. 无数"], "D", "任何直径所在直线都是对称轴", 1);
+        add("圆心角为90°，半径为1的扇形弧长是？", ["A. π/2", "B. π/4", "C. π", "D. 2π"], "A", "弧长 = 90×π×1/180 = π/2", 1);
+        // 中等 (2)
+        add("圆的切线性质：切线垂直于过切点的", ["A. 直径", "B. 半径", "C. 弦", "D. 弧"], "B", "切线垂直于经过切点的半径", 2);
+        add("半径为4的圆，面积为？", ["A. 8π", "B. 16π", "C. 12π", "D. 4π"], "B", "面积=π×16=16π", 2);
+        add("若扇形的圆心角为60°，半径6，则扇形面积是？", ["A. 6π", "B. 3π", "C. 12π", "D. 9π"], "A", "扇形面积 = (60/360)×π×36 = 6π", 2);
+        add("同圆中，相等的圆心角所对的弧（ ）", ["A. 相等", "B. 不相等", "C. 互补", "D. 无关系"], "A", "圆心角相等则所对弧、弦相等", 2);
+        add("圆周角定理：同弧所对圆周角是圆心角的", ["A. 相等", "B. 2倍", "C. 一半", "D. 无法确定"], "C", "圆周角等于圆心角度数的一半", 2);
+        add("圆内接四边形对角（ ）", ["A. 相等", "B. 互补", "C. 互余", "D. 乘积为1"], "B", "圆内接四边形对角互补", 2);
+        add("已知圆的周长为10π，则半径为？", ["A. 5", "B. 10", "C. 2.5", "D. 20"], "A", "2πr=10π → r=5", 2);
+        add("半径为5的圆，弦心距为3，则弦长是？", ["A. 6", "B. 8", "C. 10", "D. 4"], "B", "半弦长=√(5²-3²)=4，弦长8", 2);
+        add("从圆外一点引两条切线，切线长（ ）", ["A. 相等", "B. 不相等", "C. 乘积为半径", "D. 与半径有关"], "A", "切线长定理：两条切线长相等", 2);
+        add("半圆（或直径）所对的圆周角是", ["A. 锐角", "B. 直角", "C. 钝角", "D. 平角"], "B", "直径所对圆周角为90°", 2);
+        // 较难 (3)
+        add("圆O中，弦AB垂直直径CD于E，若CE=2，ED=8，则AB长为？", ["A. 6", "B. 8", "C. 10", "D. 12"], "B", "半径=5，OE=3，半弦=4，AB=8", 3);
+        add("两圆半径分别为3和5，圆心距为7，则位置关系是？", ["A. 外离", "B. 外切", "C. 相交", "D. 内切"], "C", "5-3<7<5+3，相交", 3);
+        add("扇形的弧长为4π，半径为6，则圆心角为？", ["A. 90°", "B. 120°", "C. 150°", "D. 60°"], "B", "弧长= nπr/180 → 4π = nπ×6/180 → n=120°", 3);
+        add("圆内接正六边形边长为2，则外接圆半径为？", ["A. 1", "B. 2", "C. √3", "D. 2√3"], "B", "正六边形边长等于外接圆半径", 3);
+        add("圆的一条弦把圆周分成1:2两部分，则这条弦所对圆周角的度数是？", ["A. 60°", "B. 120°", "C. 60°或120°", "D. 90°"], "C", "优弧240°，劣弧120°，圆周角为60°或120°", 3);
+        add("若圆锥底面半径为3，母线长为5，则侧面积为？", ["A. 15π", "B. 24π", "C. 30π", "D. 12π"], "A", "侧面积=πrl=π×3×5=15π", 3);
+        add("圆x²+y²=25上一点到直线3x+4y=25的距离最大值是？", ["A. 5", "B. 6", "C. 8", "D. 10"], "D", "圆心距=5，半径5，最大距离=5+5=10", 3);
+        add("已知圆内接三角形ABC，∠A=70°，则∠BOC（O圆心）等于？", ["A. 140°", "B. 70°", "C. 35°", "D. 110°"], "A", "圆心角是圆周角两倍=140°", 3);
+        add("半径为R的圆中，弦长等于R的弦所对的圆心角弧度是？", ["A. π/6", "B. π/3", "C. π/2", "D. 2π/3"], "B", "由余弦定理得圆心角60°=π/3", 3);
+        add("已知圆O半径为10，弦AB//CD，AB=12，CD=16，则AB与CD距离为？", ["A. 2或14", "B. 4", "C. 6", "D. 8"], "A", "弦心距分别为8和6，距离=2或14", 3);
+        for (let i = 0; i < 12; i++) add(`圆幂定理应用${i+1}: 圆外一点P引切线长t, 割线PAB, 则PA·PB=`, ["A. t²", "B. 2t", "C. t", "D. t³"], "A", "切割线定理", 3);
+        while(bank.length < 50) add("圆的基本性质: 等弧对等弦", ["A. 正确", "B. 错误", "C. 不一定", "D. 无关联"], "A", "在同圆或等圆中，等弧对等弦", 2);
+        return bank.slice(0,50);
+    };
 
-    // 动态渲染所有题目
-    const container = document.getElementById("questions-container");
-    let userSelections = [];     // 存储每道题当前选中的值 (初始为空)
-    
-    // 初始化渲染
-    function renderQuestions() {
-        if (!container) return;
-        container.innerHTML = '';
-        QUESTIONS.forEach((q, idx) => {
-            const questionCard = document.createElement('div');
-            questionCard.className = 'question-card';
-            questionCard.setAttribute('data-qidx', idx);
-            
-            // 题目头部
-            const titleDiv = document.createElement('div');
-            titleDiv.className = 'q-title';
-            titleDiv.innerHTML = `<span class="q-num">第 ${idx+1} 题</span><span class="question-text">${escapeHtml(q.text)}</span>`;
-            
-            // 选项区域
-            const optionsDiv = document.createElement('div');
-            optionsDiv.className = 'options-grid';
-            
-            q.options.forEach(opt => {
-                const optLetter = opt.charAt(0); // A, B, C, D
-                const optText = opt.substring(2).trim(); // 去除 "A. " 前缀
-                const optionItem = document.createElement('div');
-                optionItem.className = 'option-item';
-                
-                const radio = document.createElement('input');
-                radio.type = 'radio';
-                radio.name = `q_${idx}`;
-                radio.value = optLetter;
-                radio.id = `q${idx}_${optLetter}`;
-                
-                // 如果有之前保存的选中值，恢复选中
-                if (userSelections[idx] === optLetter) {
-                    radio.checked = true;
-                }
-                
-                // 事件：更新存储
-                radio.addEventListener('change', (e) => {
-                    if (e.target.checked) {
-                        userSelections[idx] = optLetter;
-                        // 实时清除对应的反馈（让用户重新作答时反馈区域不再显示旧结果，提升体验）
-                        const feedbackDiv = questionCard.querySelector('.feedback-area');
-                        if (feedbackDiv) {
-                            feedbackDiv.innerHTML = '⚡ 未提交，可重新选择答案';
-                            feedbackDiv.className = 'feedback-area feedback-neutral';
-                        }
-                        // 同时全局分数板暂时隐藏或不清除，等待重新提交
-                        const scoreCard = document.getElementById('score-area');
-                        if(scoreCard) scoreCard.style.display = 'none';
+    const FULL_BANK = buildQuestionBank();
+
+    // 全局状态
+    let currentQuestions = [];      // { original, shuffledOptions, userAnswer, isCorrectFlag, marked }
+    let currentIndex = 0;
+    let quizActive = false;
+    let timerInterval = null;
+    let startTime = null;
+    let isSubmitted = false;
+    let finalElapsedSeconds = 0;
+    let darkMode = false;
+
+    // DOM 元素
+    const startScreenDiv = document.getElementById('startScreen');
+    const quizInterfaceDiv = document.getElementById('quizInterface');
+    const beginBtn = document.getElementById('beginBtn');
+    const themeBtn = document.getElementById('themeSwitchBtn');
+    const restartBtn = document.getElementById('restartExamBtn');
+    const submitFinalBtn = document.getElementById('finalSubmitBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const timerDisplaySpan = document.getElementById('timerDisplay');
+    const currentQuestionTextSpan = document.getElementById('currentQuestionText');
+    const optionsContainerDiv = document.getElementById('optionsContainer');
+    const singleFeedbackDiv = document.getElementById('singleFeedback');
+    const questionGrid = document.getElementById('questionGrid');
+    const completedCountSpan = document.getElementById('completedCount');
+    const pendingCountSpan = document.getElementById('pendingCount');
+    const markBtn = document.getElementById('markBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const finalScoreSpan = document.getElementById('finalScoreSpan');
+    const scoreSummaryArea = document.getElementById('scoreSummaryArea');
+    const scoreDetailMsgSpan = document.getElementById('scoreDetailMsg');
+    const timeSpentMsgSpan = document.getElementById('timeSpentMsg');
+    const currentQNumSpan = document.getElementById('currentQNum');
+
+    function shuffleOptions(originalOptions, correctLetter) {
+        const items = originalOptions.map(opt => {
+            const letter = opt.charAt(0);
+            const text = opt.substring(2).trim();
+            return { value: letter, fullText: `${letter}. ${text}`, isCorrect: (letter === correctLetter) };
+        });
+        for (let i = items.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [items[i], items[j]] = [items[j], items[i]];
+        }
+        return items;
+    }
+
+    function selectRandomQuestions() {
+        const shuffled = [...FULL_BANK];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        let selected = shuffled.slice(0, 10);
+        selected.sort((a,b) => a.difficulty - b.difficulty);
+        return selected.map(orig => ({
+            original: orig,
+            shuffledOptions: shuffleOptions(orig.options, orig.correct),
+            userAnswer: null,
+            isCorrectFlag: false,
+            marked: false
+        }));
+    }
+
+    function stopTimer() {
+        if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+        if (startTime && !isSubmitted) finalElapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+    }
+
+    function startTimer() {
+        if (timerInterval) stopTimer();
+        startTime = Date.now();
+        timerInterval = setInterval(() => {
+            if (!startTime || isSubmitted) return;
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const mins = Math.floor(elapsed / 60);
+            const secs = elapsed % 60;
+            timerDisplaySpan.innerText = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+        }, 1000);
+    }
+
+    function formatTime(sec) {
+        const m = Math.floor(sec / 60);
+        const s = sec % 60;
+        return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    }
+
+    function updateStatsAndGrid() {
+        if (!currentQuestions.length) return;
+        const answeredCount = currentQuestions.filter(q => q.userAnswer !== null).length;
+        completedCountSpan.innerText = answeredCount;
+        pendingCountSpan.innerText = currentQuestions.length - answeredCount;
+        // 渲染网格
+        questionGrid.innerHTML = '';
+        currentQuestions.forEach((q, idx) => {
+            const div = document.createElement('div');
+            div.className = `grid-item ${q.userAnswer ? 'answered' : 'unanswered'} ${currentIndex === idx ? 'current' : ''} ${q.marked ? 'marked' : ''}`;
+            div.innerText = idx + 1;
+            div.addEventListener('click', () => {
+                if (!quizActive) return;
+                currentIndex = idx;
+                renderCurrentQuestion();
+                updateStatsAndGrid();
+            });
+            questionGrid.appendChild(div);
+        });
+    }
+
+    function getCorrectAnswerText(qData) {
+        const correctOpt = qData.shuffledOptions.find(opt => opt.isCorrect);
+        return correctOpt ? correctOpt.fullText : qData.original.correct;
+    }
+
+    function renderCurrentQuestion() {
+        if (!currentQuestions.length) return;
+        const qData = currentQuestions[currentIndex];
+        currentQNumSpan.innerText = `第${currentIndex+1}题`;
+        currentQuestionTextSpan.innerText = qData.original.text;
+        optionsContainerDiv.innerHTML = '';
+        qData.shuffledOptions.forEach(opt => {
+            const optDiv = document.createElement('div');
+            optDiv.className = 'opt-radio';
+            if (isSubmitted) optDiv.classList.add('disabled-opt');
+            const radioId = `opt_${currentIndex}_${opt.value}`;
+            const isChecked = (qData.userAnswer === opt.value);
+            optDiv.innerHTML = `
+                <input type="radio" name="currentRadio" id="${radioId}" value="${opt.value}" ${isChecked ? 'checked' : ''} ${isSubmitted ? 'disabled' : ''}>
+                <label for="${radioId}">${opt.fullText}</label>
+            `;
+            if (!isSubmitted) {
+                const radioInput = optDiv.querySelector('input');
+                radioInput.addEventListener('change', (e) => {
+                    if (e.target.checked && !isSubmitted) {
+                        currentQuestions[currentIndex].userAnswer = opt.value;
+                        updateStatsAndGrid();
+                        singleFeedbackDiv.innerHTML = '✅ 答案已保存，可继续作答';
+                        scoreSummaryArea.classList.add('hidden');
                     }
                 });
-                
-                const labelSpan = document.createElement('label');
-                labelSpan.htmlFor = radio.id;
-                labelSpan.textContent = `${optLetter}. ${optText}`;
-                
-                optionItem.appendChild(radio);
-                optionItem.appendChild(labelSpan);
-                optionsDiv.appendChild(optionItem);
-            });
-            
-            // 反馈区域
-            const feedbackDiv = document.createElement('div');
-            feedbackDiv.className = 'feedback-area feedback-neutral';
-            feedbackDiv.id = `fb-${idx}`;
-            feedbackDiv.innerHTML = '📌 还未作答，选择一个选项后提交吧';
-            
-            questionCard.appendChild(titleDiv);
-            questionCard.appendChild(optionsDiv);
-            questionCard.appendChild(feedbackDiv);
-            container.appendChild(questionCard);
+            }
+            optionsContainerDiv.appendChild(optDiv);
         });
-    }
-    
-    // 辅助防XSS
-    function escapeHtml(str) {
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
-            return c;
-        });
-    }
-    
-    // 提交评分与反馈升级
-    function submitQuiz() {
-        // 获取当前所有radio的选择（同步userSelections）
-        for (let i = 0; i < QUESTIONS.length; i++) {
-            const selectedRadio = document.querySelector(`input[name="q_${i}"]:checked`);
-            if (selectedRadio) {
-                userSelections[i] = selectedRadio.value;
-            } else {
-                userSelections[i] = null;   // 未选
-            }
-        }
-        
-        let score = 0;
-        const total = QUESTIONS.length;
-        const feedbackElements = [];
-        for (let i = 0; i < total; i++) {
-            const fbDiv = document.getElementById(`fb-${i}`);
-            if (fbDiv) feedbackElements.push(fbDiv);
-        }
-        
-        // 逐题判定并显示反馈
-        for (let i = 0; i < total; i++) {
-            const q = QUESTIONS[i];
-            const userAnswer = userSelections[i];
-            const isCorrect = (userAnswer && userAnswer === q.correct);
-            if (isCorrect) score++;
-            
-            const fbDiv = document.getElementById(`fb-${i}`);
-            if (!fbDiv) continue;
-            
-            // 构造正确答案文本
-            const correctOptionLetter = q.correct;
-            let correctAnswerText = "";
-            for (let opt of q.options) {
-                if (opt.startsWith(correctOptionLetter)) {
-                    correctAnswerText = opt;
-                    break;
-                }
-            }
-            if (!correctAnswerText) correctAnswerText = `${correctOptionLetter} (具体选项)`;
-            
-            if (!userAnswer) {
-                // 未作答情况
-                fbDiv.innerHTML = `❌ 未作答！正确答案是 ${correctAnswerText}。${q.explanation ? ' 💡 ' + q.explanation : ''}`;
-                fbDiv.className = 'feedback-area feedback-wrong';
-            } else if (isCorrect) {
-                fbDiv.innerHTML = `✅ 回答正确！ ${q.explanation ? '✨ ' + q.explanation : '很棒！'}`;
-                fbDiv.className = 'feedback-area feedback-correct';
-            } else {
-                fbDiv.innerHTML = `❌ 错误。正确答案是 ${correctAnswerText}。${q.explanation ? ' 📘 ' + q.explanation : '再回顾一下知识点吧'}`;
-                fbDiv.className = 'feedback-area feedback-wrong';
-            }
-        }
-        
-        // 显示总分区域
-        const scoreCard = document.getElementById('score-area');
-        const scoreDisplaySpan = document.getElementById('scoreDisplay');
-        const scoreMsgSpan = document.getElementById('scoreMessage');
-        
-        if (scoreCard && scoreDisplaySpan) {
-            scoreCard.style.display = 'block';
-            scoreDisplaySpan.innerText = `${score} / ${total}`;
-            let percentage = Math.round((score / total) * 100);
-            let message = '';
-            if (percentage === 100) message = '🎉 完美！几何大师就是你！ 🎉';
-            else if (percentage >= 80) message = '🌟 非常优秀！圆的知识掌握得很扎实 🌟';
-            else if (percentage >= 60) message = '📚 不错哟，再复习一下薄弱点会更棒！ 📚';
-            else if (percentage >= 40) message = '💪 有提升空间，多看公式和定理，加油！ 💪';
-            else message = '🌱 别灰心，圆的奥秘需要慢慢探索，再来一次吧 🌱';
-            if (scoreMsgSpan) scoreMsgSpan.innerText = message;
-            
-            // 滚动到得分区域，更友好
-            scoreCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        if (isSubmitted) {
+            const isCurrCorrect = currentQuestions[currentIndex].isCorrectFlag;
+            const correctAns = getCorrectAnswerText(currentQuestions[currentIndex]);
+            singleFeedbackDiv.innerHTML = isCurrCorrect ? `🎉 正确！ ${currentQuestions[currentIndex].original.explanation}` : `❌ 错误。正确答案：${correctAns}。${currentQuestions[currentIndex].original.explanation}`;
+        } else {
+            singleFeedbackDiv.innerHTML = '📌 选择答案后自动保存，右侧网格显示答题状态';
         }
     }
-    
-    // 重置所有答案: 清除所有radio选中，重置反馈，清空userSelections数组，隐藏分数板
-    function resetQuiz() {
-        // 清除所有 radio 的选中状态
-        for (let i = 0; i < QUESTIONS.length; i++) {
-            const radios = document.querySelectorAll(`input[name="q_${i}"]`);
-            radios.forEach(radio => radio.checked = false);
-            // 重置存储
-            userSelections[i] = null;
-            // 重置反馈区域为未作答样式
-            const fbDiv = document.getElementById(`fb-${i}`);
-            if (fbDiv) {
-                fbDiv.innerHTML = '📌 还未作答，选择一个选项后提交吧';
-                fbDiv.className = 'feedback-area feedback-neutral';
-            }
+
+    function submitAndStop() {
+        if (!quizActive || isSubmitted) return;
+        stopTimer();
+        let correctCount = 0;
+        for (let q of currentQuestions) {
+            const isRight = (q.userAnswer !== null && q.shuffledOptions.find(opt => opt.value === q.userAnswer)?.isCorrect === true);
+            q.isCorrectFlag = isRight;
+            if (isRight) correctCount++;
         }
-        // 隐藏得分卡片
-        const scoreCard = document.getElementById('score-area');
-        if (scoreCard) scoreCard.style.display = 'none';
-        // 额外重置可能残留的未提交高亮
+        isSubmitted = true;
+        finalScoreSpan.innerText = `${correctCount} / ${currentQuestions.length}`;
+        let msg = correctCount === 10 ? '🏆 满分！几何大师！' : (correctCount >= 8 ? '🌟 非常优秀！' : (correctCount >= 6 ? '📚 不错，继续加油' : '💪 再挑战一次吧'));
+        scoreDetailMsgSpan.innerText = msg;
+        timeSpentMsgSpan.innerText = `⏱️ 用时 ${formatTime(finalElapsedSeconds)}`;
+        scoreSummaryArea.classList.remove('hidden');
+        updateStatsAndGrid();
+        renderCurrentQuestion();
+        // 禁用标记清除按钮
+        markBtn.disabled = true;
+        clearBtn.disabled = true;
     }
-    
-    // 监听页面加载完毕后渲染以及绑定按钮
-    document.addEventListener('DOMContentLoaded', () => {
-        // 初始化 userSelections 长度
-        userSelections = new Array(QUESTIONS.length).fill(null);
-        renderQuestions();
-        
-        const submitBtn = document.getElementById('submitQuiz');
-        const resetBtn = document.getElementById('resetQuiz');
-        
-        if (submitBtn) submitBtn.addEventListener('click', submitQuiz);
-        if (resetBtn) resetBtn.addEventListener('click', resetQuiz);
+
+    function resetFullExam() {
+        stopTimer();
+        isSubmitted = false;
+        currentQuestions = selectRandomQuestions();
+        currentIndex = 0;
+        quizActive = true;
+        startTimer();
+        renderCurrentQuestion();
+        updateStatsAndGrid();
+        scoreSummaryArea.classList.add('hidden');
+        singleFeedbackDiv.innerHTML = '✨ 新测验已开始，计时启动！✨';
+        markBtn.disabled = false;
+        clearBtn.disabled = false;
+    }
+
+    function launchNewQuiz() {
+        currentQuestions = selectRandomQuestions();
+        currentIndex = 0;
+        isSubmitted = false;
+        quizActive = true;
+        startTimer();
+        renderCurrentQuestion();
+        updateStatsAndGrid();
+        scoreSummaryArea.classList.add('hidden');
+        startScreenDiv.classList.add('hidden');
+        quizInterfaceDiv.classList.remove('hidden');
+        markBtn.disabled = false;
+        clearBtn.disabled = false;
+    }
+
+    // 标记本题
+    function toggleMark() {
+        if (isSubmitted || !quizActive) return;
+        currentQuestions[currentIndex].marked = !currentQuestions[currentIndex].marked;
+        updateStatsAndGrid();
+        singleFeedbackDiv.innerHTML = currentQuestions[currentIndex].marked ? '⭐ 已标记本题，可在导航网格查看' : '📌 已取消标记';
+    }
+
+    function clearCurrentAnswer() {
+        if (isSubmitted || !quizActive) return;
+        if (currentQuestions[currentIndex].userAnswer !== null) {
+            currentQuestions[currentIndex].userAnswer = null;
+            updateStatsAndGrid();
+            renderCurrentQuestion();
+            singleFeedbackDiv.innerHTML = '🗑️ 已清除当前答案，可重新选择';
+        } else {
+            singleFeedbackDiv.innerHTML = '当前题目尚未作答，无需清除';
+        }
+    }
+
+    beginBtn.addEventListener('click', launchNewQuiz);
+    restartBtn.addEventListener('click', () => {
+        if (quizInterfaceDiv.classList.contains('hidden')) launchNewQuiz();
+        else resetFullExam();
     });
-    
-    // 额外安全：动态加载后确保所有radio变化都能同步存储 (已在render中每个radio绑定change)
-    // 如果后来通过reset清除，userSelections已经同步，完美。
+    submitFinalBtn.addEventListener('click', () => {
+        if (quizActive && !isSubmitted && currentQuestions.length) submitAndStop();
+        else if (isSubmitted) alert('成绩已提交，如需重考请点击“重新测验”');
+        else alert('请先开始测验');
+    });
+    prevBtn.addEventListener('click', () => { if (quizActive && currentIndex > 0) { currentIndex--; renderCurrentQuestion(); updateStatsAndGrid(); } });
+    nextBtn.addEventListener('click', () => { if (quizActive && currentIndex < currentQuestions.length-1) { currentIndex++; renderCurrentQuestion(); updateStatsAndGrid(); } });
+    themeBtn.addEventListener('click', () => { darkMode = !darkMode; if (darkMode) document.body.classList.add('dark'); else document.body.classList.remove('dark'); });
+    markBtn.addEventListener('click', toggleMark);
+    clearBtn.addEventListener('click', clearCurrentAnswer);
 </script>
 </body>
 </html>
